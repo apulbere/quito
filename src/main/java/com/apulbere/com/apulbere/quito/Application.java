@@ -26,7 +26,7 @@ public class Application {
                 .separator(';')
                 .datePosition(6)
                 .amountPosition(1)
-                .lineFilter(record -> record.size() > 2 && record.get(0).contains("/") && record.get(0).length() != 0)
+                .lineFilter(record -> record.size() > 2 && record.get(0).contains("/") && record.get(1).length() != 0)
                 .build();
 
         var bankPayments = filePaymentProcessor.read("/home/adrian/Downloads/RLV_0002_01_05_2018.CSV", bankDataDescription);
