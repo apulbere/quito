@@ -13,20 +13,20 @@ public class Application {
         var filePaymentProcessor = new FilePaymentProcessor(paymentProcessor);
 
         var monefyDataDescription = DataDescription.builder()
-                .separator(",")
+                .separator(',')
                 .datePosition(0)
                 .amountPosition(3)
-                .lineFilter(line -> line[0].contains("/") && !line[2].contains("Initial balance"))
+                .lineFilter(record -> record.get(0).contains("/") && !record.get(0).contains("Initial balance"))
                 .between(of(2018, 4, 1), of(2018, 4, 30))
                 .build();
 
         var monefyPayments = filePaymentProcessor.read("/home/adrian/Downloads/Monefy.Data.01-05-2018.csv", monefyDataDescription);
 
         var bankDataDescription = DataDescription.builder()
-                .separator(";")
+                .separator(';')
                 .datePosition(6)
                 .amountPosition(1)
-                .lineFilter(line -> line.length > 2 && line[0].contains("/") && line[1].length() != 0)
+                .lineFilter(record -> record.size() > 2 && record.get(0).contains("/") && record.get(0).length() != 0)
                 .build();
 
         var bankPayments = filePaymentProcessor.read("/home/adrian/Downloads/RLV_0002_01_05_2018.CSV", bankDataDescription);

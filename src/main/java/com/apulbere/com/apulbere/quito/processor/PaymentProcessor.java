@@ -7,7 +7,6 @@ import com.apulbere.com.apulbere.quito.model.PaymentGroup;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -19,11 +18,10 @@ import static java.util.stream.Collectors.*;
 public class PaymentProcessor {
     private static final Logger log = Logger.getLogger(PaymentProcessor.class.getName());
 
-    public List<Payment> process(Stream<String> lines, DataDescription dataDescription) {
+    public List<Payment> process(Stream<List<String>> records, DataDescription dataDescription) {
         var mapping = mapping(Payment::getAmount, reducing(BigDecimal.ZERO, BigDecimal::add));
 
-        return lines.map(line -> line.split(dataDescription.getSeparator()))
-                .filter(dataDescription.getLineFilter())
+        return records.filter(dataDescription.getLineFilter())
                 .map(line -> createPayment(line, dataDescription))
                 .filter(payment -> isIncluded(payment, dataDescription))
                 .collect(groupingBy(Payment::getDate, mapping))
@@ -55,13 +53,13 @@ public class PaymentProcessor {
         return new Payment(entry.getKey(), entry.getValue());
     }
 
-    private Payment createPayment(String line[], DataDescription dataDescription) {
-        var date = LocalDate.parse(line[dataDescription.getDatePosition()], dataDescription.getDateTimeFormatter());
+    private Payment createPayment(List<String> record, DataDescription dataDescription) {
+        var date = LocalDate.parse(record.get(dataDescription.getDatePosition()), dataDescription.getDateTimeFormatter());
         var amount = BigDecimal.ZERO;
         try {
-            amount = (BigDecimal) dataDescription.getDecimalFormat().parse(line[dataDescription.getAmountPosition()]);
+            amount = (BigDecimal) dataDescription.getDecimalFormat().parse(record.get(dataDescription.getAmountPosition()));
         } catch (ParseException e) {
-            log.log(Level.SEVERE, e.getMessage() + Arrays.toString(line));
+            log.log(Level.SEVERE, e.getMessage());
         }
         return new Payment(date, amount);
     }

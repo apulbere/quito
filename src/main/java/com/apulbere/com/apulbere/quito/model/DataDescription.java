@@ -5,32 +5,33 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Predicate;
 
 import static java.math.BigDecimal.ZERO;
 
 public class DataDescription {
-    String separator;
+    char delimiter;
     int amountPosition;
     int datePosition;
     DateTimeFormatter dateTimeFormatter;
     DecimalFormat decimalFormat;
-    Predicate<String[]> lineFilter;
+    Predicate<List<String>> lineFilter;
     Predicate<BigDecimal> amountFilter;
     PaymentPeriod paymentPeriod;
 
     private DataDescription() {}
 
-    private DataDescription(String separator,
+    private DataDescription(char delimiter,
                             int amountPosition,
                             int datePosition,
                             DateTimeFormatter dateTimeFormatter,
                             DecimalFormat decimalFormat,
-                            Predicate<String[]> lineFilter,
+                            Predicate<List<String>> lineFilter,
                             Predicate<BigDecimal> amountFilter,
                             PaymentPeriod paymentPeriod) {
-        this.separator = separator;
+        this.delimiter = delimiter;
         this.amountPosition = amountPosition;
         this.datePosition = datePosition;
         this.dateTimeFormatter = dateTimeFormatter;
@@ -40,8 +41,8 @@ public class DataDescription {
         this.paymentPeriod = paymentPeriod;
     }
 
-    public String getSeparator() {
-        return separator;
+    public char getDelimiter() {
+        return delimiter;
     }
 
     public int getAmountPosition() {
@@ -60,7 +61,7 @@ public class DataDescription {
         return decimalFormat;
     }
 
-    public Predicate<String[]> getLineFilter() {
+    public Predicate<List<String>> getLineFilter() {
         return lineFilter;
     }
 
@@ -92,16 +93,16 @@ public class DataDescription {
             return DateTimeFormatter.ofPattern("dd/MM/yyyy");
         }
 
-        private Predicate<String[]> defaultLineFilter() {
-            return line -> line.length >= 2 && line[0].contains("/");
+        private Predicate<List<String>> defaultLineFilter() {
+            return line -> line.size() >= 2 && line.get(0).contains("/");
         }
 
         private Predicate<BigDecimal> defaultAmountFilter() {
             return amount -> ZERO.compareTo(amount) > 0;
         }
 
-        public DataDescriptionBuilder separator(String separator) {
-            this.separator = separator;
+        public DataDescriptionBuilder separator(char separator) {
+            this.delimiter = separator;
             return this;
         }
 
@@ -115,7 +116,7 @@ public class DataDescription {
             return this;
         }
 
-        public DataDescriptionBuilder lineFilter(Predicate<String[]> lineFilter) {
+        public DataDescriptionBuilder lineFilter(Predicate<List<String>> lineFilter) {
             this.lineFilter = lineFilter;
             return this;
         }
@@ -127,7 +128,7 @@ public class DataDescription {
 
         public DataDescription build() {
             return new DataDescription(
-                separator,
+                delimiter,
                 amountPosition,
                 datePosition,
                 defaultDateTimeFormatter(),
