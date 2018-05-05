@@ -21,6 +21,7 @@ import static java.util.stream.Collectors.*;
 public class PaymentServiceImpl implements PaymentService {
     private static final Logger log = Logger.getLogger(PaymentServiceImpl.class.getName());
 
+    @Override
     public List<Payment> process(Stream<List<String>> records, DataDescription dataDescription) {
         var mapping = mapping(Payment::getAmount, reducing(BigDecimal.ZERO, BigDecimal::add));
 
@@ -39,8 +40,9 @@ public class PaymentServiceImpl implements PaymentService {
                 && dataDescription.getPaymentPeriod().contains(payment.getDate());
     }
 
-    public List<PaymentGroup> merge(List<Payment>... payments) {
-        return Stream.of(payments).flatMap(List::stream)
+    @Override
+    public List<PaymentGroup> merge(List<List<Payment>> payments) {
+        return payments.stream().flatMap(List::stream)
                 .collect(groupingBy(Payment::getDate, mapping(Payment::getAmount, toList())))
                 .entrySet()
                 .stream()

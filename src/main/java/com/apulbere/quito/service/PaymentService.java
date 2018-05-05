@@ -9,5 +9,5 @@ import java.util.stream.Stream;
 
 public interface PaymentService {
     List<Payment> process(Stream<List<String>> records, DataDescription dataDescription);
-    List<PaymentGroup> merge(List<Payment>... payments);
+    List<PaymentGroup> merge(List<List<Payment>> payments);
 }

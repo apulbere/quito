@@ -7,6 +7,8 @@ import com.apulbere.quito.service.PaymentService;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+import java.util.List;
+
 import static java.time.LocalDate.of;
 
 public class Application {
@@ -36,7 +38,7 @@ public class Application {
 
         var bankPayments = filePaymentProcessor.read("/home/adrian/Downloads/RLV_0002_01_05_2018.CSV", bankDataDescription);
 
-        var merge = paymentProcessor.merge(monefyPayments, bankPayments);
+        var merge = paymentProcessor.merge(List.of(monefyPayments, bankPayments));
         System.out.println(merge);
 
     }

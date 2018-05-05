@@ -2,6 +2,7 @@ package com.apulbere.quito.service.impl;
 
 import com.apulbere.quito.model.DataDescription;
 import com.apulbere.quito.model.Payment;
+import com.apulbere.quito.model.PaymentGroup;
 import com.apulbere.quito.service.FilePaymentService;
 import com.apulbere.quito.service.PaymentService;
 import org.apache.commons.csv.CSVFormat;
@@ -13,11 +14,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.StreamSupport.stream;
 
 @Named
@@ -31,6 +35,7 @@ public class FilePaymentServiceImpl implements FilePaymentService {
         this.paymentService = paymentService;
     }
 
+    @Override
     public List<Payment> read(String filePath, DataDescription dataDescription) {
         var csvFormat = CSVFormat.DEFAULT.withDelimiter(dataDescription.getDelimiter());
         try {
@@ -41,6 +46,17 @@ public class FilePaymentServiceImpl implements FilePaymentService {
             log.log(Level.SEVERE, e.getMessage());
         }
         return emptyList();
+    }
+
+    private List<Payment> read(Map.Entry<String, DataDescription> dataDescription) {
+        return read(dataDescription.getKey(), dataDescription.getValue());
+    }
+
+    @Override
+    public List<PaymentGroup> read(Map<String, DataDescription> fileDescriptions) {
+        return fileDescriptions.entrySet().stream()
+                .map(this::read)
+                .collect(collectingAndThen(Collectors.toList(), paymentService::merge));
     }
 
     private List<String> toList(CSVRecord csvRecord) {
