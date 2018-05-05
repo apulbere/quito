@@ -1,16 +1,21 @@
-package com.apulbere.com.apulbere.quito;
+package com.apulbere.quito;
 
-import com.apulbere.com.apulbere.quito.model.DataDescription;
-import com.apulbere.com.apulbere.quito.processor.FilePaymentProcessor;
-import com.apulbere.com.apulbere.quito.processor.PaymentProcessor;
+import com.apulbere.quito.inject.BasicModule;
+import com.apulbere.quito.model.DataDescription;
+import com.apulbere.quito.service.FilePaymentService;
+import com.apulbere.quito.service.PaymentService;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 import static java.time.LocalDate.of;
 
 public class Application {
 
     public static void main(String[] args) {
-        var paymentProcessor = new PaymentProcessor();
-        var filePaymentProcessor = new FilePaymentProcessor(paymentProcessor);
+        Injector injector = Guice.createInjector(new BasicModule());
+        var paymentProcessor = injector.getInstance(PaymentService.class);
+        var filePaymentProcessor = injector.getInstance(FilePaymentService.class);
+
 
         var monefyDataDescription = DataDescription.builder()
                 .separator(',')

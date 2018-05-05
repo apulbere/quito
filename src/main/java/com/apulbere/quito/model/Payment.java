@@ -1,4 +1,4 @@
-package com.apulbere.com.apulbere.quito.model;
+package com.apulbere.quito.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

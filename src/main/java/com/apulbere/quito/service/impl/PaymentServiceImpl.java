@@ -1,9 +1,11 @@
-package com.apulbere.com.apulbere.quito.processor;
+package com.apulbere.quito.service.impl;
 
-import com.apulbere.com.apulbere.quito.model.DataDescription;
-import com.apulbere.com.apulbere.quito.model.Payment;
-import com.apulbere.com.apulbere.quito.model.PaymentGroup;
+import com.apulbere.quito.model.DataDescription;
+import com.apulbere.quito.model.Payment;
+import com.apulbere.quito.model.PaymentGroup;
+import com.apulbere.quito.service.PaymentService;
 
+import javax.inject.Named;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -15,8 +17,9 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
 
-public class PaymentProcessor {
-    private static final Logger log = Logger.getLogger(PaymentProcessor.class.getName());
+@Named
+public class PaymentServiceImpl implements PaymentService {
+    private static final Logger log = Logger.getLogger(PaymentServiceImpl.class.getName());
 
     public List<Payment> process(Stream<List<String>> records, DataDescription dataDescription) {
         var mapping = mapping(Payment::getAmount, reducing(BigDecimal.ZERO, BigDecimal::add));

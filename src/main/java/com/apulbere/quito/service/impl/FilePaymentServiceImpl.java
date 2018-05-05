@@ -1,10 +1,14 @@
-package com.apulbere.com.apulbere.quito.processor;
+package com.apulbere.quito.service.impl;
 
-import com.apulbere.com.apulbere.quito.model.DataDescription;
-import com.apulbere.com.apulbere.quito.model.Payment;
+import com.apulbere.quito.model.DataDescription;
+import com.apulbere.quito.model.Payment;
+import com.apulbere.quito.service.FilePaymentService;
+import com.apulbere.quito.service.PaymentService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,13 +20,15 @@ import java.util.stream.Stream;
 import static java.util.Collections.emptyList;
 import static java.util.stream.StreamSupport.stream;
 
-public class FilePaymentProcessor {
-    private static final Logger log = Logger.getLogger(PaymentProcessor.class.getName());
+@Named
+public class FilePaymentServiceImpl implements FilePaymentService {
+    private static final Logger log = Logger.getLogger(PaymentServiceImpl.class.getName());
 
-    private PaymentProcessor paymentProcessor;
+    private PaymentService paymentService;
 
-    public FilePaymentProcessor(PaymentProcessor paymentProcessor) {
-        this.paymentProcessor = paymentProcessor;
+    @Inject
+    public FilePaymentServiceImpl(PaymentService paymentService) {
+        this.paymentService = paymentService;
     }
 
     public List<Payment> read(String filePath, DataDescription dataDescription) {
@@ -30,7 +36,7 @@ public class FilePaymentProcessor {
         try {
             Stream<List<String>> csvStream = stream(csvFormat.parse(new FileReader(filePath)).spliterator(), false)
                     .map(this::toList);
-            return paymentProcessor.process(csvStream, dataDescription);
+            return paymentService.process(csvStream, dataDescription);
         } catch (IOException e) {
             log.log(Level.SEVERE, e.getMessage());
         }

@@ -1,4 +1,4 @@
-package com.apulbere.com.apulbere.quito.model;
+package com.apulbere.quito.model;
 
 import java.time.LocalDate;
 import java.util.Objects;
